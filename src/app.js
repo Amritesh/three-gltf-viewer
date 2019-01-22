@@ -3,6 +3,9 @@ const Viewer = require('./viewer');
 const SimpleDropzone = require('simple-dropzone');
 const ValidationController = require('./validation-controller');
 const queryString = require('query-string');
+// const cubeRoomGltf = require('../assets/environment/CubeRoom/CubeRoom.gltf');
+// const cubeRoom = require('../assets/environment/CubeRoom');
+// const Sofa = require('../assets/environment/Sofa/index');
 
 if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
   console.error('The File APIs are not fully supported in this browser.');
@@ -28,6 +31,8 @@ class App {
         : null
     };
 
+    window.app = this;
+
     this.el = el;
     this.viewer = null;
     this.viewerEl = null;
@@ -39,6 +44,8 @@ class App {
     this.createDropzone();
     this.hideSpinner();
 
+    // this.preload();
+
     const options = this.options;
 
     if (options.kiosk) {
@@ -49,6 +56,27 @@ class App {
     if (options.model) {
       this.view(options.model, '', new Map());
     }
+  }
+
+  /**
+   * Sets up the objects for POC.
+   */
+  preload(name){
+    let rootFile = cubeRoomGltf;
+    let rootPath;
+    let fileMap = cubeRoom;
+    Array.from(fileMap).forEach(([path, file]) => {
+      if (file.name.match(/\.(gltf|glb)$/)) {
+        rootFile = file;
+        rootPath = path.replace(file.name, '');
+      }
+    });
+
+    if (!rootFile) {
+      this.onError('No .gltf or .glb asset found.');
+    }
+
+    this.view(rootFile, rootPath, fileMap);
   }
 
   /**
@@ -103,9 +131,10 @@ class App {
    */
   view (rootFile, rootPath, fileMap) {
 
-    if (this.viewer) this.viewer.clear();
+    // if (this.viewer) this.viewer.clear();
 
     const viewer = this.viewer || this.createViewer();
+    window.viewer = viewer;
 
     const fileURL = typeof rootFile === 'string'
       ? rootFile
@@ -124,6 +153,14 @@ class App {
           this.validationCtrl.validate(fileURL, rootPath, fileMap, gltf);
         }
         cleanup();
+        if(rootPath.includes("CubeRoom")){
+          viewer.scene.children[1].position.set(0,0,0);
+          viewer.scene.children[1].scale.multiplyScalar(300);
+        }
+        if(rootPath.includes("Sofa")){
+          viewer.scene.children[2].position.set(0,0,0);
+          viewer.scene.children[2].scale.multiplyScalar(0.6);
+        }
       });
   }
 
@@ -155,5 +192,10 @@ class App {
 document.addEventListener('DOMContentLoaded', () => {
 
   const app = new App(document.body, location);
-
+  var autoRotate = document.querySelector('input[id="autoRotate"]');
+    autoRotate.onchange = () => {
+      if(window.viewer){
+        viewer.controls.autoRotate = autoRotate.checked;
+      }
+  }
 });

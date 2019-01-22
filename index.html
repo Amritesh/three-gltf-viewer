@@ -14,7 +14,7 @@
   <script src="bundle.js?v=r99"></script>
 </head>
 <body>
-  <header>
+  <header style="display:none">
     <h1><a href="/">glTF Viewer</a></h1>
     <span class="separator layout-md"> | </span>
     <a class="item layout-md" target="_blank" href="https://github.com/mrdoob/three.js/tree/r99">
@@ -35,6 +35,10 @@
     <span class="flex-grow"></span>
     <button id="download-btn" class="item" style="display: none;">⬇&nbsp;&nbsp;&nbsp;Download</button>
   </header>
+  <div style="z-index: 1;top: 10%;position: absolute;left: 10%;">
+      <input type="checkbox" id="autoRotate" name="autoRotate">
+      <label for="autoRotate">Auto Rotate</label>
+  </div>
   <main class="wrap">
     <div class="dropzone">
       <div class="placeholder">
@@ -51,7 +55,7 @@
     <div class="spinner"></div>
   </main>
   <script type="text/x-handlebars-template" id="report-toggle-template">
-    <div class="report-toggle level-{{issues.maxSeverity}}">
+    <div class="report-toggle level-{{issues.maxSeverity}}" style="display:none">
       <div class="report-toggle-text">
         {{#if issues}}
           {{#if issues.numErrors }}
@@ -170,19 +174,5 @@
         {{/unless}}
       </tbody>
     </table>
-  </script>
-  <script type="text/javascript">
-    var _gauges = _gauges || [];
-    (function() {
-      var t   = document.createElement('script');
-      t.type  = 'text/javascript';
-      t.async = true;
-      t.id    = 'gauges-tracker';
-      t.setAttribute('data-site-id', '5a8793930b35915b9c0000a9');
-      t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
-      t.src = 'https://d2fuc4clr7gvcn.cloudfront.net/track.js';
-      var s = document.getElementsByTagName('script')[0];
-      s.parentNode.insertBefore(t, s);
-    })();
   </script>
 </body>

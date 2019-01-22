@@ -213,7 +213,7 @@ module.exports = class Viewer {
    */
   setContent ( object, clips ) {
 
-    this.clear();
+    // this.clear();
 
     object.updateMatrixWorld();
     const box = new THREE.Box3().setFromObject(object);
@@ -559,11 +559,11 @@ module.exports = class Viewer {
     perfLi.classList.add('gui-stats');
     perfFolder.__ul.appendChild( perfLi );
 
-    const guiWrap = document.createElement('div');
-    this.el.appendChild( guiWrap );
-    guiWrap.classList.add('gui-wrap');
-    guiWrap.appendChild(gui.domElement);
-    gui.open();
+    // const guiWrap = document.createElement('div');
+    // this.el.appendChild( guiWrap );
+    // guiWrap.classList.add('gui-wrap');
+    // guiWrap.appendChild(gui.domElement);
+    // gui.open();
 
   }
 
