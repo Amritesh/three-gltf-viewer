@@ -44,7 +44,7 @@ class App {
     this.createDropzone();
     this.hideSpinner();
 
-    // this.preload();
+    this.preload();
 
     const options = this.options;
 
@@ -61,21 +61,10 @@ class App {
   /**
    * Sets up the objects for POC.
    */
-  preload(name){
-    let rootFile = cubeRoomGltf;
-    let rootPath;
-    let fileMap = cubeRoom;
-    Array.from(fileMap).forEach(([path, file]) => {
-      if (file.name.match(/\.(gltf|glb)$/)) {
-        rootFile = file;
-        rootPath = path.replace(file.name, '');
-      }
-    });
-
-    if (!rootFile) {
-      this.onError('No .gltf or .glb asset found.');
-    }
-
+  preload(){
+    let rootFile = './Assets1/CubeRoom/CubeRoom.gltf';
+    let rootPath = './Assets1/CubeRoom/';
+    let fileMap = [];
     this.view(rootFile, rootPath, fileMap);
   }
 
