@@ -59,13 +59,75 @@ class App {
   }
 
   /**
+   * To create local file from URL
+   */
+  async createFile(url){
+    let response = await fetch(url);
+    let data = await response.blob();
+    let filename = url.split("/").pop();
+    let fileExt = url.split(".")[1];      //Note - may give errors for few urls
+    
+    let extToMetaTypeMap = {
+      "bin": "application/octet-stream",
+      "gltf": "",
+      "png": "image/png",
+      "jpg": "image/jpg",
+      "jpeg": "image/jpeg",
+    }
+
+    let metadata = {
+      type: extToMetaTypeMap[fileExt]
+    };
+    return new File([data], filename, metadata);
+  }
+
+  /**
+   * To create FileMap for URL array
+   */
+  createFileMap(urls){
+    return new Promise((res, rej) => {
+      let fileMap = new Map();
+      let arrayLen = urls.length;
+      let count = 0;
+      urls.forEach(async (url, index, urls) => {
+          let file = await this.createFile(url);
+          fileMap.set(url, file);
+          count++;
+
+          if(count == arrayLen){
+            res(fileMap);
+          }
+      })
+    })
+  }
+
+  /**
    * Sets up the objects for POC.
    */
-  preload(){
-    let rootFile = './Assets1/CubeRoom/CubeRoom.gltf';
-    let rootPath = './Assets1/CubeRoom/';
-    let fileMap = [];
-    this.view(rootFile, rootPath, fileMap);
+  async preload(){
+    let rootFile = '../Assets1/CubeRoom/CubeRoom.gltf';
+    let rootPath = '../Assets1/CubeRoom/';
+    let assetUrls = [ '/Assets1/CubeRoom/CubeRoom.bin', 
+                      '/Assets1/CubeRoom/CubeRoom.gltf', 
+                      '/Assets1/CubeRoom/CubeRoom_BakedDiffuse_4096.png']
+    this.createFileMap(assetUrls)
+    .then((fileMap) => {
+      this.view(rootFile, rootPath, fileMap);
+    }).then(()=>{
+      let rootFile1 = '../Assets1/Sofa/scene.gltf';
+      let rootPath1 = '../Assets1/Sofa/';
+      let assetUrls1 = [ '/Assets1/Sofa/scene.bin', 
+                        '/Assets1/Sofa/scene.gltf', 
+                        '/Assets1/Sofa/textures/pasted__sofalegsShape_bakedmtl2_metallicRoughness.png',
+                        '/Assets1/Sofa/textures/pasted__sofabody2Shape_bakedmtl2_metallicRoughness.png',
+                        '/Assets1/Sofa/textures/pasted__sofabody2Shape_bakedmtl2_baseColor.png'
+                      ]
+      this.createFileMap(assetUrls1)
+      .then((fileMap) => {
+        this.view(rootFile1, rootPath1, fileMap);
+      });
+    }
+    );
   }
 
   /**
@@ -73,7 +135,7 @@ class App {
    */
   createDropzone () {
     const dropCtrl = new SimpleDropzone(this.dropEl, this.inputEl);
-    dropCtrl.on('drop', ({files}) => this.load(files));
+    dropCtrl.on('drop', ({files}) => {debugger; return this.load(files)});
     dropCtrl.on('dropstart', () => this.showSpinner());
     dropCtrl.on('droperror', () => this.hideSpinner());
   }
